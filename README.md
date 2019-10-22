@@ -1,0 +1,2 @@
+# pytris
+Kursuse Programmeerimine projekt 
