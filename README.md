@@ -14,16 +14,18 @@ Python modules used: pygame, tkinter.
 * Shapes respond to controls
 * Shapes can detect surroundings in the grid
 * Shapes get randomly generated
+* Shapes settle into place correctly
 
 ### Beta version goals
-* Shapes settle into place correctly
 * The grid acknowledges a filled row and removes it, shifting everything down
 * The game ends when the grid gets filled to the top
 * Custom shapes can be added before a game starts
 * Board size can be set before a game starts
 * Upcoming shape display on screen
+* A complete menu GUI with settings
 
 ### Additional goals
+* Ghost piece functionality
 * Score display
 * Game difficulty setting
 * Nicer graphics
