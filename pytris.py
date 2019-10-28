@@ -9,12 +9,16 @@ cfg.read('config.ini')
 
 BLOCK_SIZE = cfg.getint('Options', 'blocksize')
 BOARD_H = cfg.getint('Options', 'boardheight')
+BOARD_H += 4 # 4 extra spaces for spawning in the shapes
 BOARD_W = cfg.getint('Options', 'boardwidth')
 FPS = cfg.getint('Options', 'fpscap')
-SLOWDOWN = cfg.getint('Options', 'slowdown')
+START_DIFFICULTY = cfg.getint('Options', 'startdifficulty')
 
+SIDE_PANEL_W = BLOCK_SIZE * 6 # next shape panel is 4x4 plus padding on each side
+TOP_PANEL_H = BLOCK_SIZE * 4 # the same 4 extra spaces but in blocks
+NEXT_SHAPE_PANEL_SIZE = BLOCK_SIZE * 4
 SCREEN_H = BLOCK_SIZE * BOARD_H
-SCREEN_W = BLOCK_SIZE * BOARD_W
+SCREEN_W = BLOCK_SIZE * BOARD_W + SIDE_PANEL_W
 
 def start_gui():
     # GUI/Menu function for customizing game and running it
@@ -42,6 +46,9 @@ def run_game():
         pass
 
     def draw_grid():
+        pass
+        
+    def draw_panel():
         pass
 
     def rotate_shape(shape):
@@ -108,25 +115,44 @@ def run_game():
 
     # Get time in milliseconds from the last tick (to make movement even on all CPU speeds)
     dt = clock.tick(FPS) 
-    # Set up a counter 
-    t_counter = 0
-    # Spawn in the first shape and set up some variables
+    d_counter = 0 # Counter for controlling down movement 
+    lr_counter = 0 # Counter for controlling left/right movement
+    
+    # Spawn in the first two shapes, set up their position and speed
     new_shape, new_shape_name, x, y, spd_modifier = spawn_shape()
+    new_shape_next, new_shape_next_name, x, y, spd_modifier = spawn_shape()
+    
+    difficulty = START_DIFFICULTY # Difficulty will be changing, first assign it from config
+    rows_counter = 0 
+    
+    left_pressed = False
+    right_pressed = False
+    
+    game_paused = False
+    
+    # Music and sound effects init will be here
 
+
+    # Main game loop
     is_running = True
     while is_running:
         # Input/controls 
         event = pg.event.poll()
         if event.type == pg.QUIT:
             is_running = False
-
-        check_rows()
-        update_grid()
-        draw_grid()
         
-        # Update display, run next frame
-        pg.display.flip()
-        dt = clock.tick(FPS)
+        # This way pause has control over everything on the screen, so no need to save any other states
+        if not game_paused:
+            # Check for movement inputs here
+            
+            check_rows()
+            update_grid()
+            draw_grid()
+            draw_panel()
+            
+            # Update display, run next frame
+            pg.display.flip()
+            dt = clock.tick(FPS)
 
     pg.quit()
 
