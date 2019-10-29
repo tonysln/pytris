@@ -42,8 +42,34 @@ def run_game():
             new_shape = rotate_shape(new_shape)
         return new_shape, new_shape_name, x, y, spd_modifier
 
-    def update_grid():
-        pass
+    def update_grid(shape, current_x, current_y):
+        rows_empty = 0
+        cols_empty = 0
+
+        # Remove old shape position each frame in case it has updated
+        for y in range(len(GRID)): 
+            for x in range(len(GRID[y])):
+                if GRID[y][x] == '*':
+                    GRID[y][x] = '0'
+
+        # Count empty rows/cols of the shape from ONE side, to keep 
+        # the coordinates correct (more on this in documentation)
+        for row in shape: 
+            if '1' not in row:
+                rows_empty += 1
+            else:
+                break
+        for row in rotate_shape(shape):
+            if '1' not in row:
+                cols_empty += 1
+            else:
+                break
+
+        # Append new shape to the grid, accounting for its' position and empty rows/cols
+        for y in range(len(shape)): 
+            for x in range(len(shape[y])): 
+                if shape[y][x] == '1':
+                    GRID[y + current_y - rows_empty][x + current_x - cols_empty] = '*' 
 
     def draw_grid():
         pass
@@ -77,7 +103,7 @@ def run_game():
         for row in rotate_shape(shape):
             if '1' not in row:
                 w -= 1
-        return (w,h)
+        return {'w':w, 'h':h}
 
     def save_shape():
         pass
@@ -130,7 +156,7 @@ def run_game():
     
     # Spawn in the first two shapes, set up their position and speed
     new_shape, new_shape_name, x, y, spd_modifier = spawn_shape()
-    new_shape_next, new_shape_next_name, x, y, spd_modifier = spawn_shape()
+    next_shape, next_shape_name, x, y, spd_modifier = spawn_shape()
     
     difficulty = START_DIFFICULTY # Difficulty will be changing, first assign it from config
     rows_counter = 0 
@@ -177,7 +203,7 @@ def run_game():
                     pass # new shape, for debugging
             
             check_rows()
-            update_grid()
+            update_grid(new_shape, x, y)
             draw_grid()
             draw_panel()
             
