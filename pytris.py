@@ -155,12 +155,26 @@ def run_game():
             if event.key == pg.K_q:
                 is_running = False
             # Key P for pause and unpause
-            if event.key == pg.K_p:
+            if event.key == pg.K_p or event.key == pg.K_ESCAPE:
                 game_paused = not game_paused
         
         # This way pause has control over everything on the screen, so no need to save any other states
         if not game_paused:
-            # Check for movement inputs here
+            if event.type == pg.KEYDOWN:
+                if event.key == pg.K_UP or event.key == pg.K_x:
+                    pass # rotate
+                if event.key == pg.K_DOWN:
+                    pass # hard/soft drop
+                if event.key == pg.K_LEFT:
+                    pass # move left
+                if event.key == pg.K_RIGHT:
+                    pass # move right
+                if event.key == pg.K_SPACE:
+                    pass # hard drop
+                if event.key == pg.K_r:
+                    pass # restart game, for debugging
+                if event.key == pg.K_n:
+                    pass # new shape, for debugging
             
             check_rows()
             update_grid()
