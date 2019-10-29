@@ -66,8 +66,18 @@ def run_game():
         shape = list([row[::-1] for row in t])
         return shape
 
-    def get_size():
-        pass
+    def get_size(shape):
+        w = len(shape[0])
+        h = len(shape)
+        # Remove from height if row empty
+        for row in shape:
+            if '1' not in row:
+                h -= 1
+        # Remove from width if column empty
+        for row in rotate_shape(shape):
+            if '1' not in row:
+                w -= 1
+        return (w,h)
 
     def save_shape():
         pass
@@ -140,6 +150,13 @@ def run_game():
         event = pg.event.poll()
         if event.type == pg.QUIT:
             is_running = False
+        if event.type == pg.KEYDOWN:
+            # Key Q for exit
+            if event.key == pg.K_q:
+                is_running = False
+            # Key P for pause and unpause
+            if event.key == pg.K_p:
+                game_paused = not game_paused
         
         # This way pause has control over everything on the screen, so no need to save any other states
         if not game_paused:
