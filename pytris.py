@@ -30,16 +30,14 @@ def run_game():
     # The main game runtime function
 
     def spawn_shape():
-        # Reset coordinates and speed
-        x = 0
-        y = 0
-        spd_modifier = 1
         # Choose a new random shape from the SHAPES dict
         new_shape_name = random.choice(list(SHAPES))
         new_shape = SHAPES[str(new_shape_name)]
-        # Rotate the shape randomly by 0-360 degrees
-        for i in range(random.randint(0,4)):
-            new_shape = rotate_shape(new_shape)
+        # Reset coordinates and speed
+        x = 0
+        # Spawn shape one block above the visible board (on the last rows of the 4 extra spaces)
+        y = 0 + get_size(new_shape)['h'] 
+        spd_modifier = 1
         return new_shape, new_shape_name, x, y, spd_modifier
 
     def update_grid(shape, current_x, current_y):
@@ -51,7 +49,6 @@ def run_game():
             for x in range(len(GRID[y])):
                 if GRID[y][x] == '*':
                     GRID[y][x] = '0'
-
         # Count empty rows/cols of the shape from ONE side, to keep 
         # the coordinates correct (more on this in documentation)
         for row in shape: 
@@ -64,15 +61,23 @@ def run_game():
                 cols_empty += 1
             else:
                 break
-
         # Append new shape to the grid, accounting for its' position and empty rows/cols
         for y in range(len(shape)): 
             for x in range(len(shape[y])): 
                 if shape[y][x] == '1':
                     GRID[y + current_y - rows_empty][x + current_x - cols_empty] = '*' 
 
-    def draw_grid():
-        pass
+    def draw_grid(shape, name):
+        # Each frame refersh the screen by filling it with black at first
+        scr.fill((0,0,0))
+        # Scan through the GRID for any saved or active blocks and draw them
+        # Color is defined by the saved shape's letter or current shape's name
+        for y in range(len(GRID)): 
+            for x in range(len(GRID[y])):
+                if GRID[y][x] in COLORS:
+                    pg.draw.rect(scr, COLORS[GRID[y][x]], [(x * BLOCK_SIZE), (y * BLOCK_SIZE), BLOCK_SIZE, BLOCK_SIZE])
+                if GRID[y][x] == '*':
+                    pg.draw.rect(scr, COLORS[name], [(x * BLOCK_SIZE), (y * BLOCK_SIZE), BLOCK_SIZE, BLOCK_SIZE])
         
     def draw_panel():
         pass
@@ -204,7 +209,7 @@ def run_game():
             
             check_rows()
             update_grid(new_shape, x, y)
-            draw_grid()
+            draw_grid(new_shape, new_shape_name)
             draw_panel()
             
             # Update display, run next frame
