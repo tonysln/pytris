@@ -114,16 +114,36 @@ def run_game():
         pass
 
     def check_rows():
-        pass
+        for y in range(len(GRID)):
+            # If there are no active blocks or empty blocks in a row, shift down every row above it
+            if not ('0' in GRID[y] or '*' in GRID[y]):
+                for row in range(y, 0, -1):
+                    for x in range(len(GRID[row])):
+                        GRID[row][x] = GRID[row-1][x]
 
     def shape_below():
-        pass
+        for y in range(len(GRID)):
+            for x in range(len(GRID[y])):
+                # For every active block, check the block below and return true if it's colored (aka saved)
+                if GRID[y][x] == '*' and GRID[y+1][x] in COLORS:
+                    return True
+        return False
 
     def shape_left():
-        pass
+        for y in range(len(GRID)):
+            for x in range(len(GRID[y])):
+                # Check if the left block is saved
+                if GRID[y][x] == '*' and GRID[y][x-1] in COLORS:
+                    return True
+        return False
 
     def shape_right():
-        pass
+        for y in range(len(GRID)):
+            for x in range(len(GRID[y])):
+                # Check if the right block is saved
+                if GRID[y][x] == '*' and GRID[y][x+1] in COLORS:
+                    return True
+        return False
 
     # Decode shape data into matrix form and save shapes into dict
     SHAPES = dict()
