@@ -79,6 +79,12 @@ def run_game():
                 if GRID[y][x] == '*':
                     pg.draw.rect(scr, COLORS[name], [(x * BLOCK_SIZE), (y * BLOCK_SIZE), BLOCK_SIZE, BLOCK_SIZE])
         
+        # Drawing the grid lines every block for all blocks on the screen
+        for i in range(1,BOARD_W + 1):
+            pg.draw.line(scr, (60,60,60), [i*BLOCK_SIZE, 0], [i*BLOCK_SIZE, SCREEN_H], 1)
+        for i in range(1,BOARD_H):
+            pg.draw.line(scr, (60,60,60), [0, i*BLOCK_SIZE], [SCREEN_W - SIDE_PANEL_W, i*BLOCK_SIZE], 1)
+        
     def draw_panel():
         pass
 
@@ -110,8 +116,12 @@ def run_game():
                 w -= 1
         return {'w':w, 'h':h}
 
-    def save_shape():
-        pass
+    def save_shape(name):
+        for y in range(len(GRID)):
+            for x in range(len(GRID[y])):
+                # Save shape and color to the grid, using the name of the current shape
+                if GRID[y][x] == '*':
+                    GRID[y][x] = str(name)
 
     def check_rows():
         for y in range(len(GRID)):
@@ -144,6 +154,12 @@ def run_game():
                 if GRID[y][x] == '*' and GRID[y][x+1] in COLORS:
                     return True
         return False
+      
+    def clean_board():
+        for y in range(len(GRID)):
+            for x in range(len(GRID[y])):
+                # Remove everything
+                GRID[y][x] = '0'
 
     # Decode shape data into matrix form and save shapes into dict
     SHAPES = dict()
@@ -223,7 +239,13 @@ def run_game():
                 if event.key == pg.K_SPACE:
                     pass # hard drop
                 if event.key == pg.K_r:
-                    pass # restart game, for debugging
+                    # restart game, for debugging
+                    clean_board()
+                    # Use the next generated shape instead of the current one
+                    new_shape = next_shape
+                    new_shape_name = next_shape_name
+                    next_shape, next_shape_name, x, y, spd_modifier = spawn_shape()
+                    print(get_size(new_shape))
                 if event.key == pg.K_n:
                     pass # new shape, for debugging
             
