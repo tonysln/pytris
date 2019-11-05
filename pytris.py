@@ -34,7 +34,7 @@ def run_game():
         new_shape_name = random.choice(list(SHAPES))
         new_shape = SHAPES[str(new_shape_name)]
         # Reset coordinates and speed
-        x = 0
+        x = 0 + (BOARD_W - get_size(new_shape)['w']) // 2
         # Spawn shape one block above the visible board (on the last rows of the 4 extra spaces)
         y = 0 + get_size(new_shape)['h'] 
         spd_modifier = 1
