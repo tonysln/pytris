@@ -230,14 +230,18 @@ def run_game():
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_UP or event.key == pg.K_x:
                     pass # rotate
-                if event.key == pg.K_DOWN:
+                if event.key == pg.K_DOWN or event.key == pg.K_SPACE:
                     pass # hard/soft drop
                 if event.key == pg.K_LEFT:
-                    pass # move left
+                    left_pressed = True
+                    # Move left if there isn't a shape or end of the board there
+                    if x > 0 and not shape_left():
+                        x -= 1
                 if event.key == pg.K_RIGHT:
-                    pass # move right
-                if event.key == pg.K_SPACE:
-                    pass # hard drop
+                    right_pressed = True
+                    # Move right if there isn't a shape or end of the board there
+                    if (x + get_size(new_shape)['w'] < BOARD_W) and not shape_right():
+                        x += 1
                 if event.key == pg.K_r:
                     # restart game, for debugging
                     clean_board()
@@ -250,6 +254,14 @@ def run_game():
                     new_shape = next_shape
                     new_shape_name = next_shape_name
                     next_shape, next_shape_name, x, y, spd_modifier = spawn_shape()
+
+            # Reset the key presses when the keys are physically released
+            if event.type == pg.KEYUP:
+                if event.key == pg.K_LEFT:
+                    left_pressed = False
+                if event.key == pg.K_RIGHT:
+                    right_pressed = False
+
             
             d_counter += (FPS * dt) / ((difficulty*10) / spd_modifier)
 
