@@ -245,9 +245,25 @@ def run_game():
                     new_shape = next_shape
                     new_shape_name = next_shape_name
                     next_shape, next_shape_name, x, y, spd_modifier = spawn_shape()
-                    print(get_size(new_shape))
                 if event.key == pg.K_n:
-                    pass # new shape, for debugging
+                    # new shape, for debugging
+                    new_shape = next_shape
+                    new_shape_name = next_shape_name
+                    next_shape, next_shape_name, x, y, spd_modifier = spawn_shape()
+            
+            d_counter += (FPS * dt) / ((difficulty*10) / spd_modifier)
+
+            if d_counter >= BLOCK_SIZE:
+                # Save shape if it's on the last row of the grid or there's a shape below
+                if y == (BOARD_H - get_size(new_shape)['h']) or shape_below():
+                    save_shape(new_shape_name)
+                    # Spawn a new shape but choose the last generated one as the active shape
+                    new_shape = next_shape
+                    new_shape_name = next_shape_name
+                    next_shape, next_shape_name, x, y, spd_modifier = spawn_shape()
+                    # Reset any pressed buttons here
+                y += 1
+                d_counter = 0
             
             check_rows()
             update_grid(new_shape, x, y)
