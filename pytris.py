@@ -229,9 +229,22 @@ def run_game():
         if not game_paused:
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_UP or event.key == pg.K_x:
-                    pass # rotate
+                    # Rotation - warning, very buggy at this point
+                    if y >= 4 and (x >= 0 or x + get_size(new_shape)['w'] < BOARD_W):
+                        try:
+                            update_grid(rotate_shape(new_shape), x, y)
+                            new_shape = rotate_shape(new_shape)
+                        except:
+                            x -= 1 # Fixing things with tape for now
+                            try:
+                                update_grid(rotate_shape(new_shape), x, y)
+                                new_shape = rotate_shape(new_shape)
+                            except:
+                                pass
+
                 if event.key == pg.K_DOWN or event.key == pg.K_SPACE:
-                    pass # hard/soft drop
+                    # Simulates a hard drop - increases FPS drastically
+                    spd_modifier = 50
                 if event.key == pg.K_LEFT:
                     left_pressed = True
                     # Move left if there isn't a shape or end of the board there
@@ -259,9 +272,27 @@ def run_game():
             if event.type == pg.KEYUP:
                 if event.key == pg.K_LEFT:
                     left_pressed = False
+                    lr_counter = 1
                 if event.key == pg.K_RIGHT:
                     right_pressed = False
+                    lr_counter = 1
 
+            # Start up a counter to move the shape for as long as the key is pressed
+            # Values 0.1, 18 and 1.4 were chosen after lots of experimentation
+            # Goal - smooth movement, not too fast yet fast enough to be effective
+            if left_pressed:
+                lr_counter *= (0.1 * dt)
+                if lr_counter > 18 * dt:
+                    if x > 0 and not shape_left():
+                        x -= 1
+                    lr_counter = 1.4 * dt
+
+            if right_pressed:
+                lr_counter *= (0.1 * dt)
+                if lr_counter > 18 * dt:
+                    if x + get_size(new_shape)['w'] < BOARD_W and not shape_right():
+                        x += 1
+                    lr_counter = 1.4 * dt
             
             d_counter += (FPS * dt) / ((difficulty*10) / spd_modifier)
 
