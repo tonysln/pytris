@@ -107,9 +107,9 @@ def run_game():
     def rotate_shape(shape):
         # First create a temp matrix
         t = list()
-        for row in range(len(shape)):
+        for row in range(len(shape[0])):
             t.append(list())
-            for col in range(len(shape[0])):
+            for col in range(len(shape)):
                 t[row].append(' ')
         # Then transpose the original and save into temp
         for y in range(len(shape)):
@@ -182,7 +182,8 @@ def run_game():
     for item in cfg.items('Shapes'):
         SHAPES[item[0].upper()] = list()
         for row in item[1].split(','):
-            SHAPES[item[0].upper()].append(list(row))  
+            if '1' in row:
+                SHAPES[item[0].upper()].append(list(row))  
 
     # Create a dict of color codes (as lists) for the default shapes 
     COLORS = dict()
