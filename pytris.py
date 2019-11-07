@@ -84,9 +84,25 @@ def run_game():
             pg.draw.line(scr, (60,60,60), [i*BLOCK_SIZE, 0], [i*BLOCK_SIZE, SCREEN_H], 1)
         for i in range(1,BOARD_H):
             pg.draw.line(scr, (60,60,60), [0, i*BLOCK_SIZE], [SCREEN_W - SIDE_PANEL_W, i*BLOCK_SIZE], 1)
+
+        # Hide top bocks
+        pg.draw.rect(scr, (0,0,0), [0, 0, SCREEN_W, TOP_PANEL_H])
         
-    def draw_panel():
-        pass
+    def draw_panel(next_shape, next_shape_name):
+        # Draw next shape
+        for y in range(len(next_shape)): 
+            for x in range(len(next_shape[y])): 
+                if next_shape[y][x] == '1':
+                    pg.draw.rect(scr, COLORS[next_shape_name], [(x * BLOCK_SIZE + (BOARD_W * BLOCK_SIZE + BLOCK_SIZE)), (y * BLOCK_SIZE + (TOP_PANEL_H + BLOCK_SIZE)), BLOCK_SIZE, BLOCK_SIZE]) 
+
+        # Draw grid for next shape window
+        for i in range(5):
+            pg.draw.line(scr, (60,60,60), [(BOARD_W * BLOCK_SIZE + BLOCK_SIZE) + BLOCK_SIZE * i, TOP_PANEL_H + BLOCK_SIZE], [(BOARD_W * BLOCK_SIZE + BLOCK_SIZE) + BLOCK_SIZE * i, BLOCK_SIZE * 4 + TOP_PANEL_H + BLOCK_SIZE], 1)
+            pg.draw.line(scr, (60,60,60), [(BOARD_W * BLOCK_SIZE + BLOCK_SIZE), (TOP_PANEL_H + BLOCK_SIZE) + BLOCK_SIZE * i], [(BOARD_W * BLOCK_SIZE + BLOCK_SIZE) + NEXT_SHAPE_PANEL_SIZE ,(TOP_PANEL_H + BLOCK_SIZE) + BLOCK_SIZE * i], 1)
+
+        # Draw text
+        
+
 
     def rotate_shape(shape):
         # First create a temp matrix
@@ -311,7 +327,7 @@ def run_game():
             check_rows()
             update_grid(new_shape, x, y)
             draw_grid(new_shape, new_shape_name)
-            draw_panel()
+            draw_panel(next_shape, next_shape_name)
             
             # Update display, run next frame
             pg.display.flip()
