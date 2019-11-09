@@ -221,6 +221,7 @@ def run_game():
     
     left_pressed = False
     right_pressed = False
+    down_pressed = False
     
     game_paused = False
     
@@ -259,7 +260,9 @@ def run_game():
                             except:
                                 pass
 
-                if event.key == pg.K_DOWN or event.key == pg.K_SPACE:
+                if event.key == pg.K_DOWN:
+                    down_pressed = True
+                if event.key == pg.K_SPACE:
                     # Simulates a hard drop - increases FPS drastically
                     spd_modifier = 50
                 if event.key == pg.K_LEFT:
@@ -293,6 +296,9 @@ def run_game():
                 if event.key == pg.K_RIGHT:
                     right_pressed = False
                     lr_counter = 1
+                if event.key == pg.K_DOWN:
+                    down_pressed = False
+                    spd_modifier = 1
 
             # Start up a counter to move the shape for as long as the key is pressed
             # Values 0.1, 18 and 1.4 were chosen after lots of experimentation
@@ -310,6 +316,9 @@ def run_game():
                     if x + get_size(new_shape)['w'] < BOARD_W and not shape_right():
                         x += 1
                     lr_counter = 1.4 * dt
+
+            if down_pressed:
+                spd_modifier = 20
             
             d_counter += (FPS * dt) / ((difficulty*10) / spd_modifier)
 
@@ -322,6 +331,7 @@ def run_game():
                     new_shape_name = next_shape_name
                     next_shape, next_shape_name, x, y, spd_modifier = spawn_shape()
                     # Reset any pressed buttons here
+                    left_pressed, right_pressed, down_pressed = False, False, False
                 y += 1
                 d_counter = 0
             
