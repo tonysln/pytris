@@ -101,8 +101,18 @@ def run_game():
             pg.draw.line(scr, (60,60,60), [(BOARD_W * BLOCK_SIZE + BLOCK_SIZE), (TOP_PANEL_H + BLOCK_SIZE) + BLOCK_SIZE * i], [(BOARD_W * BLOCK_SIZE + BLOCK_SIZE) + NEXT_SHAPE_PANEL_SIZE ,(TOP_PANEL_H + BLOCK_SIZE) + BLOCK_SIZE * i], 1)
 
         # Draw text
-        
+        next_shape_f = pg.font.SysFont('Courier New', 20)
+        next_shape_text = next_shape_f.render(('NEXT SHAPE'), False, (250, 250, 250))
+        scr.blit(next_shape_text, (BOARD_W * BLOCK_SIZE + BLOCK_SIZE, TOP_PANEL_H))
 
+        title_f = pg.font.SysFont('Courier New', 40)
+        title_text = title_f.render(('PYTRIS'), False, (250, 250, 250))
+        scr.blit(title_text, (SCREEN_W/3, TOP_PANEL_H/3))
+
+        rows_f = pg.font.SysFont('Courier New', 20)
+        rows_text = rows_f.render(('ROWS: {}'.format(rows_counter)), False, (250, 250, 250))
+        scr.blit(rows_text, (BOARD_W * BLOCK_SIZE + BLOCK_SIZE, TOP_PANEL_H + NEXT_SHAPE_PANEL_SIZE + 2 * BLOCK_SIZE))
+        
 
     def rotate_shape(shape):
         # First create a temp matrix
