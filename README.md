@@ -6,26 +6,31 @@ Project by Anton Slavin and Elen Liivapuu.
 
 Python modules used: pygame, tkinter.
 
-### Alpha version goals
+### Completed alpha version goals
 * Board grid implemented
-* Classic shapes (tetrominoes) implemented
+* Classic shapes (Tetrominos) implemented
 * Working game clock
-* Working keyboard and gamepad controls
+* Working keyboard controls
 * Shapes respond to controls
 * Shapes can detect surroundings in the grid
 * Shapes get randomly generated
 * Shapes settle into place correctly
+* The grid acknowledges a filled row and removes it, shifting everything down
+* Ability to play with custom shapes
+* Ability to set custom board size
+* Hard and soft drop implemented
+* Upcoming shape displayed
 
 ### Beta version goals
-* The grid acknowledges a filled row and removes it, shifting everything down
 * The game ends when the grid gets filled to the top
-* Custom shapes can be added before a game starts
-* Board size can be set before a game starts
-* Upcoming shape display on screen
 * A complete menu GUI with settings
+* GUI for creating and deleting custom shapes
+* Finished row counter
+* Score counter
 
 ### Additional goals
+* 7-bag randomizer
 * Ghost piece functionality
-* Score display
-* Game difficulty setting
+* Game and shape statistics
+* Multiple upcoming shapes display
 * Nicer graphics
