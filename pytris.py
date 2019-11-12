@@ -149,13 +149,21 @@ def run_game():
                 if GRID[y][x] == '*':
                     GRID[y][x] = str(name)
 
-    def check_rows():
+    def check_rows(rows_counter, difficulty):
+        rows_full = False
         for y in range(len(GRID)):
             # If there are no active blocks or empty blocks in a row, shift down every row above it
             if not ('0' in GRID[y] or '*' in GRID[y]):
+                rows_full = True
+                rows_counter += 1
                 for row in range(y, 0, -1):
                     for x in range(len(GRID[row])):
                         GRID[row][x] = GRID[row-1][x]
+        if rows_full:
+            beep.play()
+            if difficulty > 2:
+                difficulty -= 1
+        return rows_counter, difficulty
 
     def shape_below():
         for y in range(len(GRID)):
@@ -235,8 +243,16 @@ def run_game():
     
     game_paused = False
     
-    # Music and sound effects init will be here
+    # Music and sound effects init
+    pg.mixer.pre_init(44100, -16, 2, 2048)
+    pg.init()
+    pg.mixer.init()
+    pg.mixer.music.set_volume(0.1)
+    pg.mixer.music.load('korobeiniki.mp3')
+    pg.mixer.music.play(-1) #-1 means loop!
 
+    beep = pg.mixer.Sound('beep.wav')
+    beep.set_volume(0.1)
 
     # Main game loop
     is_running = True
@@ -252,6 +268,10 @@ def run_game():
             # Key P for pause and unpause
             if event.key == pg.K_p or event.key == pg.K_ESCAPE:
                 game_paused = not game_paused
+                if game_paused:
+                    pg.mixer.music.pause()
+                if not game_paused:
+                    pg.mixer.music.unpause()
         
         # This way pause has control over everything on the screen, so no need to save any other states
         if not game_paused:
@@ -288,12 +308,19 @@ def run_game():
                 if event.key == pg.K_r:
                     # restart game, for debugging
                     clean_board()
+                    difficulty = START_DIFFICULTY
+                    rows_count = 0
                     # Use the next generated shape instead of the current one
                     new_shape = next_shape
                     new_shape_name = next_shape_name
                     next_shape, next_shape_name, x, y, spd_modifier = spawn_shape()
+                    pg.mixer.music.stop()
+                    pg.mixer.music.play(-1) 
                 if event.key == pg.K_n:
                     # new shape, for debugging
+                    # if we decide to leave it in, increase game speed as a penalty
+                    if difficulty > 3:
+                        difficulty -= 2
                     new_shape = next_shape
                     new_shape_name = next_shape_name
                     next_shape, next_shape_name, x, y, spd_modifier = spawn_shape()
@@ -345,7 +372,7 @@ def run_game():
                 y += 1
                 d_counter = 0
             
-            check_rows()
+            rows_counter, difficulty = check_rows(rows_counter, difficulty)
             update_grid(new_shape, x, y)
             draw_grid(new_shape, new_shape_name)
             draw_panel(next_shape, next_shape_name)
