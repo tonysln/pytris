@@ -23,7 +23,28 @@ SCREEN_W = BLOCK_SIZE * BOARD_W + SIDE_PANEL_W
 def start_gui():
     # GUI/Menu function for customizing game and running it
 
-    run_game()
+    def startup():
+        root.destroy()
+        run_game()
+
+    root = tk.Tk()
+    root.title('PYTRIS')
+    frame = tk.Frame(root)
+    frame.pack()
+
+    blocksizelbl = tk.Label(frame, text=f"Blocksize: {BLOCK_SIZE}").grid(row=0, column=0, sticky='W', padx=20, pady=10)
+    boardhlbl = tk.Label(frame, text=f"Board height: {BOARD_H}").grid(row=1, column=0, sticky='W', padx=20, pady=10)
+    boardwlbl = tk.Label(frame, text=f"Board width: {BOARD_W}").grid(row=2, column=0, sticky='W', padx=20, pady=10)
+    difflbl = tk.Label(frame, text=f"Difficulty: {START_DIFFICULTY}").grid(row=3, column=0, sticky='W', padx=20, pady=10)
+
+    shapesbtn = tk.Button(frame,text="Shapes", command=None).grid(row=0, column=1, sticky='W', padx=20, pady=10)
+    settingsbtn = tk.Button(frame,text="Settings", command=None).grid(row=1, column=1, sticky='W', padx=20, pady=10)
+    runbtn = tk.Button(frame,text="Run Game", command=startup).grid(row=2, column=1, sticky='W', padx=20, pady=10)
+    exitbtn = tk.Button(frame, text="Exit", command=quit).grid(row=3, column=1, sticky='W', padx=20, pady=10)
+
+    root.mainloop()
+
+    # run_game()
 
 
 def run_game():
