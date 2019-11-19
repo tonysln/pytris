@@ -37,10 +37,15 @@ def start_gui():
     boardwlbl = tk.Label(frame, text=f"Board width: {BOARD_W}").grid(row=2, column=0, sticky='W', padx=20, pady=10)
     difflbl = tk.Label(frame, text=f"Difficulty: {START_DIFFICULTY}").grid(row=3, column=0, sticky='W', padx=20, pady=10)
 
-    shapesbtn = tk.Button(frame,text="Shapes", command=None).grid(row=0, column=1, sticky='W', padx=20, pady=10)
+    # shapesbtn = tk.Button(frame,text="Shapes", command=None).grid(row=3, column=1, sticky='W', padx=20, pady=10)
+    runbtn = tk.Button(frame,text="Run Game", command=startup).grid(row=0, column=1, sticky='W', padx=20, pady=10)
     settingsbtn = tk.Button(frame,text="Settings", command=None).grid(row=1, column=1, sticky='W', padx=20, pady=10)
-    runbtn = tk.Button(frame,text="Run Game", command=startup).grid(row=2, column=1, sticky='W', padx=20, pady=10)
-    exitbtn = tk.Button(frame, text="Exit", command=quit).grid(row=3, column=1, sticky='W', padx=20, pady=10)
+    exitbtn = tk.Button(frame, text="Exit", command=quit).grid(row=2, column=1, sticky='W', padx=20, pady=10)
+
+    shapeslbl = tk.Label(frame, text="Current shapes:").grid(row=0, column=2, sticky='W', padx=20, pady=10)
+
+    addshapebtn = tk.Button(frame, text="Add Shape", command=None).grid(row=0, column=3, sticky='W', padx=20, pady=10)
+    removeshapebtn = tk.Button(frame, text="Remove Shape", command=None).grid(row=1, column=3, sticky='W', padx=20, pady=10)
 
     root.mainloop()
 
