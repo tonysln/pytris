@@ -1,5 +1,7 @@
 import configparser as cp
 import tkinter as tk
+from tkinter import messagebox
+from tkinter import simpledialog
 import pygame as pg
 import random
 
@@ -26,18 +28,52 @@ def start_gui():
     def startup():
         root.destroy()
         run_game()
+        
+    def updatesize():
+        cfg.set("Options", "boardheight", str(hscale.get()))
+        cfg.set("Options", "boardwidth", str(wscale.get()))
+        with open("config.ini" "w") as cfgfile:
+            cfg.write(cfgfile)
+        tk.messagebox.showinfo("PYTRIS Launcher", "Size settings updated")
+        
+    def helpwindow():
+        tk.messagebox.showinfo("PYTRIS Launcher", "Help")
+        
+    def updateshapelist():
+        new_text = ""
+        for item in cfg.items("Shapes"):
+            new_text += str(item[0]).upper() + " "
+            shapes_loaded.set(new_text)
+            
+    def addshape():
+        ns_name = simpledialog.askstring("PYTRIS Launcher", "New shape name:", parent = frame)
+        ns_shape = simpledialog.askstring("PYTRIS Launcher", "New shape:", parent = frame)
+        if ns_name and ns_shape:
+            cfg.set("Shapes", str(ns_name), str(ns_shape))
+            random_color = str(random.randint(0,255)) + "," + str(random.randint(0,255)) + "," + str(random.randint(0,255))
+            cfg.set("Colors", str(ns_name), random_color)
+            with open("config.ini", "w") as cfgfile:
+                cfg.write(cfgfile)
+            updateshapelist()
+    
+    def removeshape():
+        rs_name = simpledialog.askstring("PYTRIS Launcher", "Name of shape to remove:", parent = frame)
+        if rs_name:
+            cfg.remove_option("Shapes", str(rs_name))
+            cfg.remove_option("Colors", str(rs_name))
+            with open("config.ini", "w") as cfgfile:
+                cfg.write(cfgfile)
+            updateshapelist()
+        
 
     root = tk.Tk()
     root.title('PYTRIS')
     frame = tk.Frame(root)
     frame.pack()
 
-    blocksizelbl = tk.Label(frame, text=f"Blocksize: {BLOCK_SIZE}").grid(row=0, column=0, sticky='W', padx=20, pady=10)
     boardhlbl = tk.Label(frame, text=f"Board height: {BOARD_H}").grid(row=1, column=0, sticky='W', padx=20, pady=10)
     boardwlbl = tk.Label(frame, text=f"Board width: {BOARD_W}").grid(row=2, column=0, sticky='W', padx=20, pady=10)
-    difflbl = tk.Label(frame, text=f"Difficulty: {START_DIFFICULTY}").grid(row=3, column=0, sticky='W', padx=20, pady=10)
 
-    # shapesbtn = tk.Button(frame,text="Shapes", command=None).grid(row=3, column=1, sticky='W', padx=20, pady=10)
     runbtn = tk.Button(frame,text="Run Game", command=startup).grid(row=0, column=1, sticky='W', padx=20, pady=10)
     settingsbtn = tk.Button(frame,text="Settings", command=None).grid(row=1, column=1, sticky='W', padx=20, pady=10)
     exitbtn = tk.Button(frame, text="Exit", command=quit).grid(row=2, column=1, sticky='W', padx=20, pady=10)
@@ -220,6 +256,24 @@ def run_game():
             for x in range(len(GRID[y])):
                 # Remove everything
                 GRID[y][x] = '0'
+    
+    # Read config again in case of changes from the menu
+    cfg = cp.ConfigParser()
+    cfg.read('config.ini')
+
+    BLOCK_SIZE = cfg.getint('Options', 'blocksize')
+    BOARD_H = cfg.getint('Options', 'boardheight')
+    BOARD_H += 4 # 4 extra spaces for spawning in the shapes
+    BOARD_W = cfg.getint('Options', 'boardwidth')
+    FPS = cfg.getint('Options', 'fpscap')
+    START_DIFFICULTY = cfg.getint('Options', 'startdifficulty')
+
+    SIDE_PANEL_W = BLOCK_SIZE * 6 # next shape panel is 4x4 plus padding on each side
+    TOP_PANEL_H = BLOCK_SIZE * 4 # the same 4 extra spaces but in blocks
+    NEXT_SHAPE_PANEL_SIZE = BLOCK_SIZE * 4
+    SCREEN_H = BLOCK_SIZE * BOARD_H
+    SCREEN_W = BLOCK_SIZE * BOARD_W + SIDE_PANEL_W            
+    
 
     # Decode shape data into matrix form and save shapes into dict
     SHAPES = dict()
