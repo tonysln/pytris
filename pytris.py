@@ -163,15 +163,15 @@ def run_game():
             pg.draw.line(scr, (60,60,60), [(BOARD_W * BLOCK_SIZE + BLOCK_SIZE), (TOP_PANEL_H + BLOCK_SIZE) + BLOCK_SIZE * i], [(BOARD_W * BLOCK_SIZE + BLOCK_SIZE) + NEXT_SHAPE_PANEL_SIZE ,(TOP_PANEL_H + BLOCK_SIZE) + BLOCK_SIZE * i], 1)
 
         # Draw text
-        next_shape_f = pg.font.SysFont('Courier New', 20)
+        next_shape_f = pg.font.SysFont('Consolas', 20)
         next_shape_text = next_shape_f.render(('NEXT SHAPE'), False, (250, 250, 250))
         scr.blit(next_shape_text, (BOARD_W * BLOCK_SIZE + BLOCK_SIZE, TOP_PANEL_H))
 
-        title_f = pg.font.SysFont('Courier New', 40)
+        title_f = pg.font.SysFont('Consolas', 36)
         title_text = title_f.render(('PYTRIS'), False, (250, 250, 250))
-        scr.blit(title_text, (SCREEN_W/3, TOP_PANEL_H/3))
+        scr.blit(title_text, (SCREEN_W//2 - title_text.get_width()//2, TOP_PANEL_H//3))
 
-        rows_f = pg.font.SysFont('Courier New', 20)
+        rows_f = pg.font.SysFont('Consolas', 20)
         rows_text = rows_f.render(('ROWS: {}'.format(rows_counter)), False, (250, 250, 250))
         scr.blit(rows_text, (BOARD_W * BLOCK_SIZE + BLOCK_SIZE, TOP_PANEL_H + NEXT_SHAPE_PANEL_SIZE + 2 * BLOCK_SIZE))
         
@@ -303,6 +303,8 @@ def run_game():
     pg.init()
     scr = pg.display.set_mode((SCREEN_W, SCREEN_H))
     pg.display.set_caption("PYTRIS")
+    icon = pg.image.load('pt_icon.png')
+    pg.display.set_icon(icon)
     clock = pg.time.Clock()
 
     # Get time in milliseconds from the last tick (to make movement even on all CPU speeds)
@@ -353,6 +355,15 @@ def run_game():
                 if not game_paused:
                     pg.mixer.music.unpause()
         
+        if game_paused:
+            pg.draw.rect(scr, (0,0,0), [0, 0, SCREEN_W, SCREEN_H])
+            pause_f = pg.font.SysFont('Consolas', 20)
+            pause_text = pause_f.render(('PYTRIS Paused'), False, (250, 250, 250))
+            scr.blit(pause_text, (SCREEN_W//2 - pause_text.get_width()//2, TOP_PANEL_H))
+                
+            pg.display.flip()
+            dt = clock.tick(FPS)
+        
         # This way pause has control over everything on the screen, so no need to save any other states
         if not game_paused:
             if event.type == pg.KEYDOWN:
@@ -389,7 +400,7 @@ def run_game():
                     # restart game, for debugging
                     clean_board()
                     difficulty = START_DIFFICULTY
-                    rows_count = 0
+                    rows_counter = 0
                     # Use the next generated shape instead of the current one
                     new_shape = next_shape
                     new_shape_name = next_shape_name
@@ -404,6 +415,13 @@ def run_game():
                     new_shape = next_shape
                     new_shape_name = next_shape_name
                     next_shape, next_shape_name, x, y, spd_modifier = spawn_shape()
+                if event.key == pg.K_m:
+                    if pg.mixer.music.get_volume() == 0 and beep.get_volume() == 0:
+                        pg.mixer.music.set_volume(0.1)
+                        beep.set_volume(0.1)
+                    else:
+                        pg.mixer.music.set_volume(0)
+                        beep.set_volume(0)
 
             # Reset the key presses when the keys are physically released
             if event.type == pg.KEYUP:
