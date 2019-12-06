@@ -32,7 +32,7 @@ def start_gui():
     def updatesize():
         cfg.set("Options", "boardheight", str(hscale.get()))
         cfg.set("Options", "boardwidth", str(wscale.get()))
-        with open("config.ini" "w") as cfgfile:
+        with open("config.ini", "w") as cfgfile:
             cfg.write(cfgfile)
         tk.messagebox.showinfo("PYTRIS Launcher", "Size settings updated")
         
@@ -67,21 +67,38 @@ def start_gui():
         
 
     root = tk.Tk()
-    root.title('PYTRIS')
+    root.title('PYTRIS Launcher')
+    root.resizable(False, False)
     frame = tk.Frame(root)
     frame.pack()
 
-    boardhlbl = tk.Label(frame, text=f"Board height: {BOARD_H}").grid(row=1, column=0, sticky='W', padx=20, pady=10)
-    boardwlbl = tk.Label(frame, text=f"Board width: {BOARD_W}").grid(row=2, column=0, sticky='W', padx=20, pady=10)
+    boardhlbl = tk.Label(frame, text="Board height:").grid(row=0, column=0, sticky='W', padx=48, pady=(24,10))
+    hscale = tk.Scale(frame, from_=10, to=36, orient="horizontal")
+    hscale.set(BOARD_H - 4)
+    hscale.grid(row=1, column=0, sticky="w", padx=48, pady=1)
+    
+    boardwlbl = tk.Label(frame, text="Board width:").grid(row=2, column=0, sticky='W', padx=48, pady=10)
+    wscale = tk.Scale(frame, from_=8, to=28, orient="horizontal")
+    wscale.set(BOARD_W)
+    wscale.grid(row=3, column=0, sticky="w", padx=48, pady=1)
+    
+    upbtn = tk.Button(frame,text="Update Size", command=updatesize).grid(row=4, column=0, sticky='W', padx=48, pady=(10,30))
+    runbtn = tk.Button(frame,text="Run Game", command=startup, height=2, width=10).grid(row=0, column=2, sticky='W', padx=48, pady=(24,10))
+    helpbtn = tk.Button(frame,text="Help", command=helpwindow).grid(row=1, column=2, sticky='W', padx=48, pady=10)
+    exitbtn = tk.Button(frame, text="Exit", command=quit).grid(row=2, column=2, sticky='W', padx=48, pady=10)
 
-    runbtn = tk.Button(frame,text="Run Game", command=startup).grid(row=0, column=1, sticky='W', padx=20, pady=10)
-    settingsbtn = tk.Button(frame,text="Settings", command=None).grid(row=1, column=1, sticky='W', padx=20, pady=10)
-    exitbtn = tk.Button(frame, text="Exit", command=quit).grid(row=2, column=1, sticky='W', padx=20, pady=10)
+    shapeslbl = tk.Label(frame, text="Current shapes:").grid(row=2, column=1, sticky='W', padx=48, pady=10)
+    shapes_loaded = tk.StringVar()
+    shapes_loaded_text = ""
+    for item in cfg.items("Shapes"):
+        shapes_loaded_text += str(item[0]).upper() + " "
+    shapes_loaded.set(shapes_loaded_text)
+    
+    shapescontentlbl = tk.Label(frame, textvariable=shapes_loaded)
+    shapescontentlbl.grid(row=3, column=1, sticky='W', padx=48, pady=10)
 
-    shapeslbl = tk.Label(frame, text="Current shapes:").grid(row=0, column=2, sticky='W', padx=20, pady=10)
-
-    addshapebtn = tk.Button(frame, text="Add Shape", command=None).grid(row=0, column=3, sticky='W', padx=20, pady=10)
-    removeshapebtn = tk.Button(frame, text="Remove Shape", command=None).grid(row=1, column=3, sticky='W', padx=20, pady=10)
+    addshapebtn = tk.Button(frame, text="Add Shape", command=addshape).grid(row=0, column=1, sticky='W', padx=48, pady=(24,10))
+    removeshapebtn = tk.Button(frame, text="Remove Shape", command=removeshape).grid(row=1, column=1, sticky='W', padx=48, pady=10)
 
     root.mainloop()
 
@@ -226,6 +243,12 @@ def run_game():
             if difficulty > 2:
                 difficulty -= 1
         return rows_counter, difficulty
+        
+    def check_lose():
+        for x in GRID[4]:
+            if x in COLORS:
+                return True
+        return False
 
     def shape_below():
         for y in range(len(GRID)):
@@ -355,7 +378,7 @@ def run_game():
                 if not game_paused:
                     pg.mixer.music.unpause()
         
-        if game_paused:
+        if game_paused and not check_lose():
             pg.draw.rect(scr, (0,0,0), [0, 0, SCREEN_W, SCREEN_H])
             pause_f = pg.font.SysFont('Consolas', 20)
             pause_text = pause_f.render(('PYTRIS Paused'), False, (250, 250, 250))
@@ -363,9 +386,36 @@ def run_game():
                 
             pg.display.flip()
             dt = clock.tick(FPS)
+            
+        if check_lose() and not game_paused:
+            if event.type == pg.KEYDOWN:
+                if event.key == pg.K_r:
+                    # restart game, for debugging
+                    clean_board()
+                    difficulty = START_DIFFICULTY
+                    rows_counter = 0
+                    # Use the next generated shape instead of the current one
+                    new_shape = next_shape
+                    new_shape_name = next_shape_name
+                    next_shape, next_shape_name, x, y, spd_modifier = spawn_shape()
+                    pg.mixer.music.stop()
+                    pg.mixer.music.play(-1) 
+                    
+            pg.draw.rect(scr, (0,0,0), [0, 0, SCREEN_W, SCREEN_H])
+            pause_f = pg.font.SysFont('Consolas', 20)
+            pause_text = pause_f.render(('Game Lost! Press R to restart'), False, (250, 250, 250))
+            scr.blit(pause_text, (SCREEN_W//2 - pause_text.get_width()//2, TOP_PANEL_H))
+            rows_f = pg.font.SysFont('Consolas', 20)
+            rows_text = rows_f.render((f'Rows cleared: {rows_counter}'), False, (250, 250, 250))
+            scr.blit(rows_text, (SCREEN_W//2 - rows_text.get_width()//2, TOP_PANEL_H + 2*pause_text.get_height()))
+            
+            pg.mixer.music.stop()
+            pg.display.flip()
+            dt = clock.tick(FPS)
+        
         
         # This way pause has control over everything on the screen, so no need to save any other states
-        if not game_paused:
+        if not game_paused and not check_lose():
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_UP or event.key == pg.K_x:
                     # Rotation - warning, very buggy at this point
