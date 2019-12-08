@@ -371,7 +371,7 @@ def run_game():
             if event.key == pg.K_q:
                 is_running = False
             # Key P for pause and unpause
-            if event.key == pg.K_p or event.key == pg.K_ESCAPE:
+            if (not check_lose()) and (event.key == pg.K_p or event.key == pg.K_ESCAPE):
                 game_paused = not game_paused
                 if game_paused:
                     pg.mixer.music.pause()
@@ -530,6 +530,6 @@ def run_game():
             dt = clock.tick(FPS)
 
     pg.quit()
-
+    start_gui()
 
 start_gui()
