@@ -37,7 +37,23 @@ def start_gui():
         tk.messagebox.showinfo("PYTRIS Launcher", "Size settings updated")
         
     def helpwindow():
-        tk.messagebox.showinfo("PYTRIS Launcher", "Help")
+        help_content = """
+        Repository: 
+        https://github.com/toshkeen/pytris
+
+        Controls:
+        Q - Quit
+        ESC / P - Pause
+        R - Restart
+        M - Mute
+        N - New shape (difficulty will increase faster by using this!)
+        X / UP - Rotate shape
+        DOWN - Soft drop
+        SPACE - Hard drop
+        LEFT - Move left
+        RIGHT - Move right
+        """
+        tk.messagebox.showinfo("PYTRIS Launcher", help_content) 
         
     def updateshapelist():
         new_text = ""
