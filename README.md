@@ -67,9 +67,9 @@ RIGHT - Move right
 * A complete menu GUI with settings
 * GUI for creating and deleting custom shapes
 * Finished row counter
+* 7-bag randomizer
 
 ### Additional goals
-* 7-bag randomizer
 * Ghost piece functionality
 * Game and shape statistics
 * Multiple upcoming shapes display

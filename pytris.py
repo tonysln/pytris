@@ -22,6 +22,10 @@ NEXT_SHAPE_PANEL_SIZE = BLOCK_SIZE * 4
 SCREEN_H = BLOCK_SIZE * BOARD_H
 SCREEN_W = BLOCK_SIZE * BOARD_W + SIDE_PANEL_W
 
+
+# 7-bag of shapes
+BAG = []
+
 def start_gui():
     # GUI/Menu function for customizing game and running it
 
@@ -124,16 +128,24 @@ def start_gui():
 def run_game():
     # The main game runtime function
 
+
     def spawn_shape():
-        # Choose a new random shape from the SHAPES dict
-        new_shape_name = random.choice(list(SHAPES))
-        new_shape = SHAPES[str(new_shape_name)]
-        # Reset coordinates and speed
-        x = 0 + (BOARD_W - get_size(new_shape)['w']) // 2
-        # Spawn shape one block above the visible board (on the last rows of the 4 extra spaces)
-        y = 0 + get_size(new_shape)['h'] 
-        spd_modifier = 1
-        return new_shape, new_shape_name, x, y, spd_modifier
+        global BAG
+        # Spawn a random shape using the 7-bag randomizer rules
+
+        if len(BAG) > 0:
+            new_shape_name = BAG.pop()
+            new_shape = SHAPES[str(new_shape_name)]
+            # Reset coordinates and speed
+            x = 0 + (BOARD_W - get_size(new_shape)['w']) // 2
+            # Spawn shape one block above the visible board (on the last rows of the 4 extra spaces)
+            y = 0 + get_size(new_shape)['h'] 
+            spd_modifier = 1
+            return new_shape, new_shape_name, x, y, spd_modifier
+        else:
+            BAG = list(SHAPES).copy()
+            random.shuffle(BAG)
+            return spawn_shape()
 
     def update_grid(shape, current_x, current_y):
         rows_empty = 0
@@ -312,7 +324,6 @@ def run_game():
     NEXT_SHAPE_PANEL_SIZE = BLOCK_SIZE * 4
     SCREEN_H = BLOCK_SIZE * BOARD_H
     SCREEN_W = BLOCK_SIZE * BOARD_W + SIDE_PANEL_W            
-    
 
     # Decode shape data into matrix form and save shapes into dict
     SHAPES = dict()
